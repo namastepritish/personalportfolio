@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pritish Parihar — Cloud &amp; DevOps Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EDEFF4; --paper:#F5F7FB; --panel:#FFFFFF; --ink:#14161F; --dim:#5B6178;
+    --line:#D7DCE8; --accent:#2F6FED; --accent2:#6C5CE7; --term:#14161F; --term-text:#DCE1F0;
+    --ok:#1FAE7A; --radius:12px;
+    --display:'Sora',sans-serif; --mono:'JetBrains Mono',monospace; --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.6;
+    background-image:linear-gradient(rgba(47,111,237,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(47,111,237,0.05) 1px, transparent 1px);
+    background-size:32px 32px;
+  }
+  a{color:inherit;} ::selection{background:var(--accent); color:#fff;}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 24px;}
+
+  header{position:sticky; top:0; z-index:50; background:rgba(237,239,244,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav.wrap{display:flex; align-items:center; justify-content:space-between; height:60px;}
+  .brand{font-family:var(--mono); font-size:13.5px; color:var(--dim);}
+  .brand b{color:var(--ink);}
+  .navlinks{display:flex; gap:26px; font-size:14px; color:var(--dim);}
+  .navlinks a{text-decoration:none; transition:color .2s;}
+  .navlinks a:hover{color:var(--accent);}
+  .nav-cta{font-family:var(--mono); font-size:13px; padding:8px 16px; background:var(--ink); color:#fff; border-radius:6px; text-decoration:none;}
+  @media(max-width:760px){.navlinks{display:none;}}
+
+  /* HERO TERMINAL */
+  .hero{padding:80px 0 60px; text-align:center;}
+  .kicker{font-family:var(--mono); font-size:13px; color:var(--dim); margin-bottom:18px;}
+  .term-window{
+    max-width:720px; margin:0 auto; text-align:left; background:var(--term); border-radius:12px;
+    box-shadow:0 30px 60px -20px rgba(20,22,31,0.35); overflow:hidden;
+  }
+  .term-bar{display:flex; align-items:center; gap:8px; padding:12px 16px; background:#1D2030; border-bottom:1px solid #2A2E42;}
+  .term-bar .tl{width:11px; height:11px; border-radius:50%;}
+  .tl.r{background:#FF5F57;} .tl.y{background:#FEBC2E;} .tl.g{background:#28C840;}
+  .term-title{font-family:var(--mono); font-size:12px; color:#7E869F; margin-left:8px;}
+  .term-body{padding:22px 24px 26px; font-family:var(--mono); font-size:14px; color:var(--term-text); min-height:260px;}
+  .term-body .line{margin-bottom:4px; white-space:pre-wrap; line-height:1.65;}
+  .prompt{color:#59D9C4;}
+  .out{color:#B7BEDA;}
+  .ok{color:#28C840;}
+  #term-input-row{display:flex; align-items:center; gap:8px; margin-top:6px;}
+  #term-input{
+    flex:1; background:transparent; border:none; outline:none; color:var(--term-text);
+    font-family:var(--mono); font-size:14px; caret-color:#59D9C4;
+  }
+  .cursor{display:inline-block; width:8px; height:16px; background:#59D9C4; animation:blink 1s step-end infinite; vertical-align:middle;}
+  @keyframes blink{50%{opacity:0;}}
+  .hint{font-family:var(--mono); font-size:12.5px; color:var(--dim); margin-top:18px;}
+  .hint b{color:var(--accent); cursor:pointer;}
+
+  /* SECTIONS: editor layout */
+  .editor{display:grid; grid-template-columns:230px 1fr; gap:0; border-top:1px solid var(--line);}
+  .sidebar{
+    position:sticky; top:60px; align-self:start; padding:36px 20px; font-family:var(--mono); font-size:13.5px;
+    color:var(--dim); border-right:1px solid var(--line); height:calc(100vh - 60px);
+  }
+  .sidebar .tree-title{font-size:11px; letter-spacing:1px; color:#9096AC; margin-bottom:14px;}
+  .sidebar a{display:block; text-decoration:none; padding:7px 10px; border-radius:6px; margin-bottom:2px; transition:all .15s;}
+  .sidebar a:hover, .sidebar a.active{background:var(--panel); color:var(--accent);}
+  @media(max-width:900px){.editor{grid-template-columns:1fr;} .sidebar{display:none;}}
+
+  .panes{padding:0 0 0 0;}
+  .file-pane{padding:56px 40px; border-bottom:1px solid var(--line);}
+  .file-tab{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:13px;
+    color:var(--dim); background:var(--panel); border:1px solid var(--line); padding:7px 14px;
+    border-radius:7px 7px 0 0; margin-bottom:0;
+  }
+  .file-tab .dot{width:6px; height:6px; border-radius:50%; background:var(--ok);}
+  h2{font-family:var(--display); font-weight:800; font-size:clamp(1.6rem,3vw,2.1rem); margin:18px 0 30px; letter-spacing:-0.01em;}
+
+  /* skills code block */
+  .code-block{background:var(--ink); border-radius:10px; padding:24px 26px; overflow-x:auto;}
+  .code-block .ln{display:flex; gap:18px; font-family:var(--mono); font-size:13.5px; line-height:1.9;}
+  .code-block .num{color:#4A4F66; user-select:none; width:22px; text-align:right; flex-shrink:0;}
+  .code-block .k{color:#59D9C4;} .code-block .s{color:#F5C177;} .code-block .p{color:#B7BEDA;}
+
+  /* experience */
+  .job{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:28px 30px; margin-bottom:20px;}
+  .job-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .job-title{font-family:var(--display); font-weight:700; font-size:18px;}
+  .job-co{color:var(--dim); font-size:14px;}
+  .job-dates{font-family:var(--mono); font-size:12.5px; color:var(--accent2); background:#F0EEFC; padding:4px 10px; border-radius:20px; height:fit-content;}
+  .job ul{padding-left:18px; font-size:14.5px; color:var(--ink);}
+  .job li{margin-bottom:9px; color:#31344A;}
+  .job li::marker{color:var(--accent);}
+
+  /* projects */
+  .proj-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media(max-width:700px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px;}
+  .proj-card h3{font-family:var(--display); font-size:16.5px; margin-bottom:10px;}
+  .proj-card ul{padding-left:18px; font-size:14px; color:var(--dim);}
+  .proj-card li{margin-bottom:7px;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  @media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+  .cert-row{display:flex; gap:10px; align-items:center; font-size:14px; padding:9px 0; border-bottom:1px dashed var(--line);}
+  .cert-row .badge{font-family:var(--mono); font-size:10.5px; background:var(--ink); color:#fff; padding:2px 7px; border-radius:4px;}
+
+  /* contact */
+  .contact-wrap{display:grid; grid-template-columns:1fr 1.1fr; gap:40px;}
+  @media(max-width:700px){.contact-wrap{grid-template-columns:1fr;}}
+  .contact-info .row{display:flex; gap:10px; font-size:14.5px; margin-bottom:14px;}
+  .contact-info .k{font-family:var(--mono); color:var(--dim); width:70px; flex-shrink:0; font-size:12.5px;}
+  .status-box{margin-top:20px; background:#EAF7F0; border:1px solid #BFE8D2; color:#127A54; font-family:var(--mono); font-size:13px; padding:14px 16px; border-radius:8px;}
+  form{display:flex; flex-direction:column; gap:12px;}
+  label{font-family:var(--mono); font-size:11.5px; color:var(--dim); display:block; margin-bottom:5px;}
+  input, textarea{width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-family:var(--body); font-size:14px; background:var(--panel); color:var(--ink);}
+  input:focus, textarea:focus{outline:none; border-color:var(--accent);}
+  textarea{min-height:100px; resize:vertical;}
+  button[type=submit]{font-family:var(--mono); font-weight:600; font-size:13.5px; padding:12px 20px; background:var(--ink); color:#fff; border:none; border-radius:8px; cursor:pointer; margin-top:4px;}
+  button[type=submit]:hover{background:var(--accent);}
+
+  footer{text-align:center; padding:28px; font-family:var(--mono); font-size:12.5px; color:var(--dim); border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="brand">~/<b>pritish-parihar</b></div>
+    <div class="navlinks">
+      <a href="#skills">skills/</a><a href="#experience">experience/</a><a href="#projects">projects/</a><a href="#contact">contact/</a>
+    </div>
+    <a class="nav-cta" href="Pritish-Parihar-Resume.pdf" target="_blank">resume.pdf ↓</a>
+  </nav>
+</header>
+
+<section class="hero wrap">
+  <div class="kicker">// cloud &amp; devops engineer · jodhpur, india</div>
+  <div class="term-window">
+    <div class="term-bar">
+      <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+      <span class="term-title">pritish@career — zsh</span>
+    </div>
+    <div class="term-body" id="term-body">
+      <div id="term-log"></div>
+      <div id="term-input-row" style="display:none;">
+        <span class="prompt">➜</span><input id="term-input" autocomplete="off" spellcheck="false" placeholder="type 'help'">
+      </div>
+    </div>
+  </div>
+  <div class="hint">try <b onclick="runCmd('skills')">skills</b>, <b onclick="runCmd('experience')">experience</b>, <b onclick="runCmd('contact')">contact</b> — or just scroll ↓</div>
+</section>
+
+<div class="editor">
+  <aside class="sidebar">
+    <div class="tree-title">EXPLORER</div>
+    <a href="#skills" class="nav-a">📁 skills/</a>
+    <a href="#experience" class="nav-a">📁 experience/</a>
+    <a href="#projects" class="nav-a">📁 projects/</a>
+    <a href="#education" class="nav-a">📁 credentials/</a>
+    <a href="#contact" class="nav-a">📁 contact/</a>
+  </aside>
+
+  <div class="panes">
+    <div class="file-pane" id="skills">
+      <div class="file-tab"><span class="dot"></span>skills.js</div>
+      <h2>What I run in production</h2>
+      <div class="code-block">
+        <div class="ln"><span class="num">1</span><span class="p"><span class="k">const</span> cloud = [<span class="s">"AWS EC2"</span>, <span class="s">"S3"</span>, <span class="s">"VPC"</span>, <span class="s">"IAM"</span>, <span class="s">"Lambda"</span>, <span class="s">"RDS"</span>, <span class="s">"EKS"</span>, <span class="s">"CloudFormation"</span>, <span class="s">"Azure Core"</span>, <span class="s">"Defender"</span>];</span></div>
+        <div class="ln"><span class="num">2</span><span class="p"><span class="k">const</span> automation = [<span class="s">"Terraform"</span>, <span class="s">"Ansible"</span>, <span class="s">"Bash"</span>, <span class="s">"Python"</span>, <span class="s">"Docker"</span>, <span class="s">"Kubernetes"</span>, <span class="s">"Jenkins"</span>];</span></div>
+        <div class="ln"><span class="num">3</span><span class="p"><span class="k">const</span> security = [<span class="s">"CIS Hardening"</span>, <span class="s">"IAM Least-Privilege"</span>, <span class="s">"Landing Zones"</span>, <span class="s">"VAPT"</span>, <span class="s">"Network Segmentation"</span>];</span></div>
+        <div class="ln"><span class="num">4</span><span class="p"><span class="k">const</span> monitoring = [<span class="s">"CloudWatch"</span>, <span class="s">"Azure Monitor"</span>, <span class="s">"Prometheus"</span>, <span class="s">"Grafana"</span>, <span class="s">"ELK"</span>, <span class="s">"RCA"</span>];</span></div>
+        <div class="ln"><span class="num">5</span><span class="p"><span class="k">return</span> cloud.concat(automation, security, monitoring).<span class="k">filter</span>(s =&gt; s.production === <span class="k">true</span>);</span></div>
+      </div>
+    </div>
+
+    <div class="file-pane" id="experience">
+      <div class="file-tab"><span class="dot"></span>experience.log</div>
+      <h2>Where I've made an impact</h2>
+      <div class="job">
+        <div class="job-top">
+          <div><div class="job-title">Cloud Technical Specialist</div><div class="job-co">TietoEVRY (now Vivicta) · Pune, India</div></div>
+          <div class="job-dates">Dec 2020 – Feb 2026</div>
+        </div>
+        <ul>
+          <li>Managed 100+ enterprise Azure/AWS workloads — CIS baselines, IAM/RBAC, encryption, audit logging.</li>
+          <li>Automated ops with Ansible/Python/Bash — cut manual effort 50%, hit 99% patch compliance.</li>
+          <li>Built cost + monitoring pipelines on CloudWatch/Azure Monitor — saved $50K+/yr through rightsizing.</li>
+          <li>Led incident response and RCA — reduced MTTR by 30%.</li>
+          <li>Wrote SOPs/runbooks, mentored engineers, ran VAPT with Microsoft Defender.</li>
+        </ul>
+      </div>
+      <div class="job">
+        <div class="job-top">
+          <div><div class="job-title">Backend Engineer</div><div class="job-co">Zimbcash · Jodhpur, India</div></div>
+          <div class="job-dates">Aug 2017 – Jul 2019</div>
+        </div>
+        <ul>
+          <li>Managed Linux web servers, deployments, and backend services for production availability.</li>
+          <li>Handled monitoring, log analysis, backups, and security hardening.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="file-pane" id="projects">
+      <div class="file-tab"><span class="dot"></span>projects/</div>
+      <h2>Things I've built</h2>
+      <div class="proj-grid">
+        <div class="proj-card">
+          <h3>OpsRamp Ansible Automation</h3>
+          <ul><li>Streamlined config management and orchestration with Ansible playbooks.</li><li>Cut manual tasks, kept environments consistent across servers.</li></ul>
+        </div>
+        <div class="proj-card">
+          <h3>Public Wi-Fi Management (AAA Protocol)</h3>
+          <ul><li>Built venue Wi-Fi tracking with AAA auth, DHCP-based IP assignment.</li><li>HTTPS captive portal, IPDR logging, Mikrotik RouterOS, Telegram OTP 2FA.</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-pane" id="education">
+      <div class="file-tab"><span class="dot"></span>credentials.md</div>
+      <h2>Education &amp; certifications</h2>
+      <div class="two-col">
+        <div>
+          <p style="font-weight:600; margin-bottom:4px;">PG Diploma, IT Infra, Systems &amp; Security</p>
+          <p style="color:var(--dim); font-size:13.5px; margin-bottom:20px;">C-DAC, Pune · 2019–2020 · Grade A</p>
+          <p style="font-weight:600; margin-bottom:4px;">B.Tech, Electrical Engineering</p>
+          <p style="color:var(--dim); font-size:13.5px;">Rajasthan Technical University · 2013–2017</p>
+        </div>
+        <div>
+          <div class="cert-row"><span class="badge">GCP</span>Professional Cloud Architect</div>
+          <div class="cert-row"><span class="badge">AZ</span>AZ-104 Administrator Associate</div>
+          <div class="cert-row"><span class="badge">AZ</span>AZ-900 Fundamentals</div>
+          <div class="cert-row"><span class="badge">NSE</span>Fortinet NSE 1 &amp; 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-pane" id="contact" style="border-bottom:none;">
+      <div class="file-tab"><span class="dot"></span>contact.sh</div>
+      <h2>Let's talk</h2>
+      <div class="contact-wrap">
+        <div class="contact-info">
+          <div class="row"><span class="k">email</span><a href="mailto:namastepritish@gmail.com">namastepritish@gmail.com</a></div>
+          <div class="row"><span class="k">phone</span><a href="tel:+917737791005">+91 77377-91005</a></div>
+          <div class="row"><span class="k">linkedin</span><a href="https://www.linkedin.com/in/namastepritish" target="_blank">/in/namastepritish</a></div>
+          <div class="row"><span class="k">base</span>Jodhpur, Rajasthan, India</div>
+          <div class="status-box">$ status --check<br>&gt; AVAILABLE NOW · IMMEDIATE JOINER · OPEN TO REMOTE</div>
+        </div>
+        <form action="https://formsubmit.co/namastepritish@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="New message from your portfolio site">
+          <input type="hidden" name="_template" value="table">
+          <div><label for="name">name</label><input id="name" name="name" required placeholder="Your name"></div>
+          <div><label for="email">email</label><input id="email" name="email" type="email" required placeholder="you@company.com"></div>
+          <div><label for="message">message</label><textarea id="message" name="message" required placeholder="Tell me about the role..."></textarea></div>
+          <button type="submit">./send message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 Pritish Parihar — built in a terminal, shipped to production.</footer>
+
+<script>
+const bootLines = [
+  {t:"$ whoami", cls:"prompt"},
+  {t:"> Pritish Parihar — Cloud & DevOps Engineer, 5+ yrs (AWS · Azure)", cls:"ok"},
+  {t:"$ cat status.txt", cls:"prompt"},
+  {t:"> AVAILABLE NOW — IMMEDIATE JOINER — OPEN TO REMOTE", cls:"out"},
+  {t:"$ ./init_portfolio.sh", cls:"prompt"},
+  {t:"> loaded skills, experience, projects, contact...", cls:"out"},
+];
+const log = document.getElementById('term-log');
+const inputRow = document.getElementById('term-input-row');
+const input = document.getElementById('term-input');
+
+function typeLine(text, cls, cb){
+  const div = document.createElement('div');
+  div.className = 'line ' + cls;
+  log.appendChild(div);
+  let i = 0;
+  const speed = 14;
+  const t = setInterval(()=>{
+    div.textContent = text.slice(0, i+1);
+    i++;
+    if(i >= text.length){ clearInterval(t); cb && cb(); }
+  }, speed);
+}
+
+function runBoot(idx){
+  if(idx >= bootLines.length){ inputRow.style.display = 'flex'; input.focus(); return; }
+  typeLine(bootLines[idx].t, bootLines[idx].cls, ()=>runBoot(idx+1));
+}
+runBoot(0);
+
+const responses = {
+  help: "available: whoami, skills, experience, projects, contact, resume, clear",
+  whoami: "Pritish Parihar — Cloud & DevOps Engineer based in Jodhpur, India. 5+ yrs, AWS + Azure.",
+  skills: "AWS · Azure · Terraform · Ansible · Kubernetes · CloudWatch · Grafana · CIS security. Scroll to skills/ for the full stack →",
+  experience: "TietoEVRY (2020–2026): $50K+ saved, 99% patch compliance, 30% MTTR cut. Scroll to experience/ →",
+  projects: "OpsRamp Ansible automation, AAA-protocol Wi-Fi management system. Scroll to projects/ →",
+  contact: "namastepritish@gmail.com · +91 77377-91005 · scrolling you to contact/ now.",
+  resume: "opening resume.pdf in a new tab...",
+};
+
+function runCmd(cmd){
+  input.value = cmd;
+  handleCommand(cmd);
+}
+
+function handleCommand(raw){
+  const cmd = raw.trim().toLowerCase();
+  const echo = document.createElement('div');
+  echo.className = 'line';
+  echo.innerHTML = '<span class="prompt">➜</span> ' + raw;
+  log.appendChild(echo);
+  input.value = '';
+
+  if(cmd === 'clear'){ log.innerHTML=''; return; }
+  if(cmd === 'resume'){
+    const r = document.createElement('div'); r.className='line out'; r.textContent = '> ' + responses.resume;
+    log.appendChild(r);
+    window.open('Pritish-Parihar-Resume.pdf','_blank');
+  } else if(responses[cmd]){
+    const r = document.createElement('div'); r.className='line out'; r.textContent = '> ' + responses[cmd];
+    log.appendChild(r);
+    if(['skills','experience','projects','contact'].includes(cmd)){
+      setTimeout(()=>{ document.getElementById(cmd).scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+    }
+  } else {
+    const r = document.createElement('div'); r.className='line out'; r.textContent = "> command not found. try 'help'";
+    log.appendChild(r);
+  }
+  log.scrollTop = log.scrollHeight;
+}
+
+input && input.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && input.value.trim().length){ handleCommand(input.value); }
+});
+
+// active sidebar link on scroll
+const sections = document.querySelectorAll('.file-pane');
+const navA = document.querySelectorAll('.nav-a');
+const secIO = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navA.forEach(a=>a.classList.remove('active'));
+      const match = document.querySelector('.nav-a[href="#'+e.target.id+'"]');
+      if(match) match.classList.add('active');
+    }
+  });
+}, {threshold:0.4});
+sections.forEach(s=>secIO.observe(s));
+</script>
+
+</body>
+</html>
